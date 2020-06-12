@@ -6,10 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
+  collapsed: boolean = true;
+  show: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  toggleDropdownMenu() {
+    this.show = !this.show;
   }
 
 }
