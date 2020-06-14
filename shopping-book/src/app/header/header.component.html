@@ -8,11 +8,11 @@
 
   <div class="collapse navbar-collapse" [class.collapse]="collapsed" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Recipes</a>
+      <li class="nav-item" [ngClass]="{'active': feature === 'recipe'}">
+        <a class="nav-link" href="#" (click)="onFeatureSelected('recipe')">Recipes</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Shopping List</a>
+      <li class="nav-item" [ngClass]="{'active': feature === 'shopping-list'}">
+        <a class="nav-link" href="#" (click)="onFeatureSelected('shopping-list')">Shopping List</a>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
