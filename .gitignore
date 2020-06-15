@@ -9,6 +9,7 @@ component-interaction/
 customer-app/
 dependency-injection/
 di-in-action/
+directive/
 displaying-data/
 dynamic-componemts/
 dynamic-forms/
