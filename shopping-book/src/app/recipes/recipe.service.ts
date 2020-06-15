@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import { Recipe } from './recipe.model';
 
 export class RecipeService {
@@ -11,6 +12,8 @@ export class RecipeService {
       'https://cookieandkate.com/images/2018/08/whole-wheat-pizza-dough-1-1-768x1152.jpg'
     ),
   ];
+
+  recipeSelected = new EventEmitter<Recipe>();
 
   getRecipes() {
     return this.recipes.slice();
