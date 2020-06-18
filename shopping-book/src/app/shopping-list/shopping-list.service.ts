@@ -1,8 +1,16 @@
+import { Subject } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
-import { EventEmitter } from '@angular/core';
 
 export class ShoppingListService {
-  ingredientsChanged = new EventEmitter<Ingredient[]>();
+  // We can either use EventEmitter or Subject to asynchronously
+  // emit/multicast events to its listeners. Here we use Subject
+  // as it is a recommended way when there is no @Output annotated
+  // to the 'ingredientsChanged' property, but we need to manually unsubscribe
+  // from the subject when the component is distroyed.
+  // Uncomment the following line of code if you want to stick with the
+  // EventEmitter method.
+  // ingredientsChanged = new EventEmitter<Ingredient[]>();
+  ingredientsChanged = new Subject<Ingredient[]>();
   private ingredients: Ingredient[] = [
     new Ingredient('Apples', 5),
     new Ingredient('Tomatoes', 10),
@@ -14,11 +22,11 @@ export class ShoppingListService {
 
   addIngredient(ingredient: Ingredient) {
     this.ingredients.push(ingredient);
-    this.ingredientsChanged.emit(this.getIngredients());
+    this.ingredientsChanged.next(this.getIngredients());
   }
 
   addIngredients(ingredients: Ingredient[]) {
     this.ingredients.push(...ingredients);
-    this.ingredientsChanged.emit(this.getIngredients());
+    this.ingredientsChanged.next(this.getIngredients());
   }
 }
