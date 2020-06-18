@@ -7,7 +7,7 @@
 <div class="row">
   <div class="col-12">
     <div class="list-group" id="list-tab" role="tablist">
-      <app-recipe-item *ngFor="let recipe of recipes" [recipe]="recipe">
+      <app-recipe-item *ngFor="let recipe of recipes; let idx = index" [recipe]="recipe" [routerLink]="[idx]">
       </app-recipe-item>
     </div>
   </div>

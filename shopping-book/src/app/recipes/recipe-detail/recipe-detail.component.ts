@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
+import { ActivatedRoute, Params, Data } from '@angular/router';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -8,11 +9,33 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-detail.component.css']
 })
 export class RecipeDetailComponent implements OnInit {
-  @Input() recipe: Recipe;
+  recipe: Recipe;
 
-  constructor(private recipeService: RecipeService) { }
+  constructor(private recipeService: RecipeService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    // Method 1: Get the 'id' from the activated route, and then call
+    // RecipeService's getRecipes to get a recipes list,
+    // than use the 'id' and that list to find out the selected recipe
+    // this.recipe = this.recipeService.getRecipes()[+this.route.snapshot.params['id']];
+    // this.route.params.subscribe(
+    //   (params: Params) => {
+    //     this.recipe = this.recipeService.getRecipes()[+params['id']];
+    //   }
+    // );
+
+    // Method 2: Use resolve
+    // Need to define route as follows:
+    // {
+    //   path: ':id',
+    //   component: RecipeDetailComponent,
+    //   resolve: { recipe: RecipeResolver }
+    // }
+    this.route.data.subscribe(
+      (data: Data) => {
+        this.recipe = data['recipe'];
+      }
+    );
   }
 
   addIngredientsToShoppingList() {

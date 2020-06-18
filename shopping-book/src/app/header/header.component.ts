@@ -7,20 +7,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
   collapsed: boolean = true;
-  show: boolean = false;
-  feature = 'recipe';
-
-  @Output() featureSelected = new EventEmitter<string>();
 
   ngOnInit(): void {
-  }
-
-  toggleDropdownMenu() {
-    this.show = !this.show;
-  }
-
-  onFeatureSelected(feature: string) {
-    this.feature = feature;
-    this.featureSelected.emit(feature);
   }
 }
