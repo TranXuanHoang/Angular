@@ -1,19 +1,41 @@
 <div class="row">
   <div class="col-xl-12">
-    <form>
+    <form #shoppingEditForm="ngForm" (ngSubmit)="onAddIngedient(shoppingEditForm)">
       <div class="row">
         <div class="col-sm-5 form-group">
           <label for="name">Name</label>
-          <input type="text" id="name" class="form-control" #nameInput>
+          <input type="text" class="form-control"
+            id="name" name="name"
+            required
+            ngModel
+            #name="ngModel">
+          <span class="text-danger" *ngIf="!name.valid && name.touched">Please specify a name</span>
         </div>
-        <div class="col-sm-2 form-group">
-          <label for="amount">Amount</label>
-          <input type="number" id="amount" class="form-control" #amountInput>
+        <div class="col-sm-5 form-group">
+          <div class="row">
+            <div class="col-sm-4">
+              <label for="amount">Amount</label>
+              <input type="number" class="form-control"
+                id="amount" name="amount"
+                required
+                pattern="^[1-9]+[0-9]*$"
+                ngModel
+                #amount="ngModel">
+            </div>
+          </div>
+          <div class="row">
+            <span class="col-sm-12" *ngIf="!amount.valid && amount.touched && amount.errors">
+              <span class="text-danger" *ngIf="amount.errors['required']">Please specify the amount</span>
+              <span class="text-danger" *ngIf="amount.errors['pattern']">Amount must greater than 0</span>
+            </span>
+          </div>
         </div>
       </div>
       <div class="row">
         <div class="col-xl-12">
-          <button class="btn btn-success mr-2" type="submit" (click)="onIngredientAdded()">Add</button>
+          <button class="btn btn-success mr-2" type="submit"
+            [disabled]="shoppingEditForm.invalid"
+            >Add</button>
           <button class="btn btn-danger mr-2" type="button">Delete</button>
           <button class="btn btn-primary" type="button">Clear</button>
         </div>
