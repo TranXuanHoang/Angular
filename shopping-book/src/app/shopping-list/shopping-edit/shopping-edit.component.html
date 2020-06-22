@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-xl-12">
-    <form #shoppingEditForm="ngForm" (ngSubmit)="onAddIngedient(shoppingEditForm)">
+    <form #shoppingEditForm="ngForm" (ngSubmit)="onSubmitIngedient(shoppingEditForm)">
       <div class="row">
         <div class="col-sm-5 form-group">
           <label for="name">Name</label>
@@ -26,7 +26,7 @@
           <div class="row">
             <span class="col-sm-12" *ngIf="!amount.valid && amount.touched && amount.errors">
               <span class="text-danger" *ngIf="amount.errors['required']">Please specify the amount</span>
-              <span class="text-danger" *ngIf="amount.errors['pattern']">Amount must greater than 0</span>
+              <span class="text-danger" *ngIf="amount.errors['pattern']">Amount must be greater than 0</span>
             </span>
           </div>
         </div>
@@ -37,8 +37,12 @@
             [disabled]="shoppingEditForm.invalid">
             {{ editingMode ? 'Update': 'Add' }}
           </button>
-          <button class="btn btn-danger mr-2" type="button">Delete</button>
-          <button class="btn btn-primary" type="button">Clear</button>
+          <button class="btn btn-danger mr-2" type="button"
+            *ngIf="editingMode"
+            (click)="onDelete()">
+            Delete
+          </button>
+          <button class="btn btn-primary" type="button" (click)="onClear()">Clear</button>
         </div>
       </div>
     </form>
