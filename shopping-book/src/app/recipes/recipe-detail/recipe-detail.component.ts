@@ -10,6 +10,7 @@ import { ActivatedRoute, Params, Data, Router } from '@angular/router';
 })
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
+  id: number;
 
   constructor(private recipeService: RecipeService, private route: ActivatedRoute, private router: Router) { }
 
@@ -36,6 +37,11 @@ export class RecipeDetailComponent implements OnInit {
         this.recipe = data['recipe'];
       }
     );
+    this.route.params.subscribe(
+      (params: Params) => {
+        this.id = +params['id'];
+      }
+    );
   }
 
   addIngredientsToShoppingList() {
@@ -44,6 +50,11 @@ export class RecipeDetailComponent implements OnInit {
 
   onEditRecipe() {
     // Navigate to (relative) /recipes/:id/edit
-    this.router.navigate(['edit'], {relativeTo: this.route});
+    this.router.navigate(['edit'], { relativeTo: this.route });
+  }
+
+  onDeleteRecipe() {
+    this.recipeService.deleteRecipe(this.id);
+    this.router.navigate(['/recipes']);
   }
 }
