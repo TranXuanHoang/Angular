@@ -9,7 +9,8 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent implements OnInit {
   isLoginMode = true;
-  isAuthenticating = false;
+  isLoading = false;
+  error: string = null;
 
   constructor(private authService: AuthService) { }
 
@@ -21,7 +22,8 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(authForm: NgForm) {
-    this.isAuthenticating = true;
+    this.isLoading = true;
+    this.error = null;
     const email = authForm.value.email;
     const password = authForm.value.password;
 
@@ -31,11 +33,11 @@ export class AuthComponent implements OnInit {
       this.authService.signup(email, password).subscribe(
         authResponse => {
           console.log(authResponse);
-          this.isAuthenticating = false;
+          this.isLoading = false;
         },
-        authError => {
-          console.log(authError);
-          this.isAuthenticating = false;
+        errorMsg => {
+          this.error = errorMsg;
+          this.isLoading = false;
         }
       );
     }

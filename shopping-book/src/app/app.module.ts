@@ -21,6 +21,7 @@ import { RecipeService } from './recipes/recipe.service';
 import { RecipeResolver } from './recipes/recipe-detail/recipe-resolver.service';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { AuthComponent } from './auth/auth.component';
+import { LoadingSprinnerComponent } from './shared/loading-sprinner/loading-sprinner.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { AuthComponent } from './auth/auth.component';
     ShoppingEditComponent,
     DropdownDirective,
     RecipeEditComponent,
-    AuthComponent
+    AuthComponent,
+    LoadingSprinnerComponent
   ],
   imports: [
     BrowserModule,
