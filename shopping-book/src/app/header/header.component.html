@@ -8,10 +8,10 @@
 
   <div class="collapse navbar-collapse" [class.collapse]="collapsed" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item" routerLinkActive="active">
+      <li class="nav-item" routerLinkActive="active" *ngIf="isAuthenticated">
         <a class="nav-link" routerLink="/recipes">Recipes</a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li class="nav-item" routerLinkActive="active" *ngIf="!isAuthenticated">
         <a class="nav-link" routerLink="/auth">Authenticate</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
@@ -19,7 +19,10 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item dropdown" appDropdown>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isAuthenticated">
+        <a type="button" class="nav-link">Logout</a>
+      </li>
+      <li class="nav-item dropdown" appDropdown *ngIf="isAuthenticated">
         <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Manage
