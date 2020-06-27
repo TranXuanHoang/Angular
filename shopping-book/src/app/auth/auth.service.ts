@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from "@angular/core";
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { User } from './user.model';
 
 export interface AuthResponseData {
   /** A Firebase Auth ID token for the newly created user. */
@@ -26,6 +27,7 @@ export interface AuthResponseData {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   static API_KEY = 'AIzaSyBvFMwO18n4FMbmPxSF8GudSB3hkOMNhac';
+  user = new Subject<User>();
 
   constructor(private http: HttpClient) { }
 
@@ -41,7 +43,8 @@ export class AuthService {
         returnSecureToken: true
       }
     ).pipe(
-      catchError(errorRes => this.handleError(errorRes))
+      catchError(errorRes => this.handleError(errorRes)),
+      tap(authRes => this.handleAuthentication(authRes))
     );
   }
 
@@ -54,8 +57,15 @@ export class AuthService {
         returnSecureToken: true
       }
     ).pipe(
-      catchError(errorRes => this.handleError(errorRes))
+      catchError(errorRes => this.handleError(errorRes)),
+      tap(authRes => this.handleAuthentication(authRes))
     );
+  }
+
+  private handleAuthentication(authRes: AuthResponseData) {
+    const tokenExpirationDate = new Date(new Date().getTime() + +authRes.expiresIn * 1000);
+    const user = new User(authRes.email, authRes.localId, authRes.localId, tokenExpirationDate);
+    this.user.next(user);
   }
 
   private handleError(errorRes: HttpErrorResponse) {
