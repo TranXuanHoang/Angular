@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from "@angular/core";
+import { Router } from '@angular/router';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
@@ -35,7 +36,7 @@ export class AuthService {
   // take(1) RxJS operator.
   user = new BehaviorSubject<User>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   // See
   // https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
@@ -66,6 +67,11 @@ export class AuthService {
       catchError(errorRes => this.handleError(errorRes)),
       tap(authRes => this.handleAuthentication(authRes))
     );
+  }
+
+  logout() {
+    this.user.next(null);
+    this.router.navigate(['/auth']);
   }
 
   private handleAuthentication(authRes: AuthResponseData) {
