@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from "@angular/core";
-import { Subject, throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
 
@@ -27,7 +27,13 @@ export interface AuthResponseData {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   static API_KEY = 'AIzaSyBvFMwO18n4FMbmPxSF8GudSB3hkOMNhac';
-  user = new Subject<User>();
+
+  // The BehaviorSubject is similar to the Subject object, but it
+  // allows its subcribers to get the values emitted before the subscription.
+  // Later on, we will subscribe to this 'user BehaviorSubject' and get the
+  // previously emitted (by the next() method) user model object by calling
+  // take(1) RxJS operator.
+  user = new BehaviorSubject<User>(null);
 
   constructor(private http: HttpClient) { }
 
@@ -64,7 +70,7 @@ export class AuthService {
 
   private handleAuthentication(authRes: AuthResponseData) {
     const tokenExpirationDate = new Date(new Date().getTime() + +authRes.expiresIn * 1000);
-    const user = new User(authRes.email, authRes.localId, authRes.localId, tokenExpirationDate);
+    const user = new User(authRes.email, authRes.localId, authRes.idToken, tokenExpirationDate);
     this.user.next(user);
   }
 
