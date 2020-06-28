@@ -11,18 +11,15 @@ import { AuthComponent } from './auth/auth.component';
 import { HeaderComponent } from './header/header.component';
 import { RecipeService } from './recipes/recipe.service';
 import { RecipesModule } from './recipes/recipes.module';
-import { DropdownDirective } from './shared/dropdown.directive';
-import { LoadingSprinnerComponent } from './shared/loading-sprinner/loading-sprinner.component';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { ShoppingListService } from './shopping-list/shopping-list.service';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    DropdownDirective,
     AuthComponent,
-    LoadingSprinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +29,7 @@ import { ShoppingListService } from './shopping-list/shopping-list.service';
     HttpClientModule,
     RecipesModule,
     ShoppingListModule,
+    SharedModule,
     NgbModule
   ],
   providers: [
