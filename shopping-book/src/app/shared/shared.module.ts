@@ -2,12 +2,12 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from '@angular/common';
 
 import { DropdownDirective } from './dropdown.directive';
-import { LoadingSprinnerComponent } from './loading-sprinner/loading-sprinner.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
     DropdownDirective,
-    LoadingSprinnerComponent
+    LoadingSpinnerComponent
   ],
   imports: [
     CommonModule
@@ -15,7 +15,7 @@ import { LoadingSprinnerComponent } from './loading-sprinner/loading-sprinner.co
   exports: [
     CommonModule,
     DropdownDirective,
-    LoadingSprinnerComponent
+    LoadingSpinnerComponent
   ]
 })
 export class SharedModule { }
