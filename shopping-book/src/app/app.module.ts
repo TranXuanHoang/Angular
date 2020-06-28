@@ -13,16 +13,13 @@ import { RecipeService } from './recipes/recipe.service';
 import { RecipesModule } from './recipes/recipes.module';
 import { DropdownDirective } from './shared/dropdown.directive';
 import { LoadingSprinnerComponent } from './shared/loading-sprinner/loading-sprinner.component';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { ShoppingListService } from './shopping-list/shopping-list.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
     DropdownDirective,
     AuthComponent,
     LoadingSprinnerComponent
@@ -34,12 +31,12 @@ import { ShoppingListService } from './shopping-list/shopping-list.service';
     ReactiveFormsModule,
     HttpClientModule,
     RecipesModule,
+    ShoppingListModule,
     NgbModule
   ],
   providers: [
     ShoppingListService,
     RecipeService,
-    // RecipeResolver, Moved to recipes.module.ts
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
   ],
   bootstrap: [AppComponent]
