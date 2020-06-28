@@ -36,6 +36,8 @@ export class AuthService {
   // take(1) RxJS operator.
   user = new BehaviorSubject<User>(null);
 
+  private tokenExpirationTimer: any;
+
   constructor(private http: HttpClient, private router: Router) { }
 
   // See
@@ -90,18 +92,36 @@ export class AuthService {
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
+      const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+      this.autoLogout(expirationDuration);
     }
   }
 
   logout() {
     this.user.next(null);
     this.router.navigate(['/auth']);
+    localStorage.removeItem('userData');
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    this.tokenExpirationTimer = null;
+  }
+
+  /**
+   * Automatically logout an authenticated user.
+   * @param expirationDuration miliseconds until the current authenticated token expires
+   */
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
   }
 
   private handleAuthentication(authRes: AuthResponseData) {
     const tokenExpirationDate = new Date(new Date().getTime() + +authRes.expiresIn * 1000);
     const user = new User(authRes.email, authRes.localId, authRes.idToken, tokenExpirationDate);
     this.user.next(user);
+    this.autoLogout(+authRes.expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
