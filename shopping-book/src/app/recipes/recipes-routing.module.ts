@@ -10,7 +10,7 @@ import { RecipesComponent } from './recipes.component';
 
 const routes: Routes = [
   {
-    path: 'recipes',
+    path: '',
     component: RecipesComponent,
     // The canActivate: [...] here will check whether the user is authenticated (logged in).
     // If yes, then it will allow navigating to /recipes. Otherwise, it will direct to /auth.
