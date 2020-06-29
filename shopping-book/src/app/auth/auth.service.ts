@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
+import { environment } from '../../environments/environment';
 
 export interface AuthResponseData {
   /** A Firebase Auth ID token for the newly created user. */
@@ -27,7 +28,7 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  static API_KEY = 'AIzaSyBvFMwO18n4FMbmPxSF8GudSB3hkOMNhac';
+  static API_KEY = environment.firebaseAPIKey;
 
   // The BehaviorSubject is similar to the Subject object, but it
   // allows its subcribers to get the values emitted before the subscription.
