@@ -6,6 +6,8 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../auth.service';
+import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
 export interface AuthResponseData {
@@ -30,7 +32,30 @@ export interface AuthResponseData {
 
 @Injectable()
 export class AuthEffects {
-  constructor(private actions$: Actions, private http: HttpClient, private router: Router) { }
+  constructor(
+    private actions$: Actions,
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) { }
+
+  @Effect()
+  authSignup = this.actions$.pipe(
+    ofType(AuthActions.SIGNUP_START),
+    switchMap((action: AuthActions.SignupStart) => {
+      return this.http.post<AuthResponseData>(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseAPIKey}`,
+        {
+          email: action.payload.email,
+          password: action.payload.password,
+          returnSecureToken: true
+        }
+      ).pipe(
+        map((authRest: AuthResponseData) => this.handleAuthentication(authRest)),
+        catchError((error: HttpErrorResponse) => this.handleError(error))
+      )
+    })
+  );
 
   @Effect()
   authLogin = this.actions$.pipe(
@@ -45,16 +70,8 @@ export class AuthEffects {
         }
       ).pipe(
         // The 'map' operator automatically wraps what returned by the 'return' statement
-        // (which in this case is an AuthActions.Login) in an Observable
-        map((resData: AuthResponseData) => {
-          const tokenExpirationDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
-          return new AuthActions.Authenticate({
-            email: resData.email,
-            userId: resData.localId,
-            token: resData.idToken,
-            tokenExpirationDate: tokenExpirationDate
-          });
-        }),
+        // (which in this case is an AuthActions.AuthenticateSuccess) in an Observable
+        map((authRes: AuthResponseData) => this.handleAuthentication(authRes)),
         catchError((error: HttpErrorResponse) => {
           // Even if the http request failed, we must handle the error and return
           // an Observable of Action, e.g. AuthActions.LoginFail
@@ -69,12 +86,77 @@ export class AuthEffects {
   );
 
   @Effect({ dispatch: false })
-  authSuccess = this.actions$.pipe(
-    ofType(AuthActions.AUTHENTICATE),
+  authRedirect = this.actions$.pipe(
+    ofType(AuthActions.AUTHENTICATE_SUCCESS/*, AuthActions.LOGOUT*/),
     tap((action: AuthActions.AuthActions) => {
-      this.router.navigate(['/'])
+      // if (action.type === AuthActions.AUTHENTICATE_SUCCESS) {
+      //   this.router.navigate(['/']);
+      // } else if (action.type === AuthActions.LOGOUT) {
+      //   this.router.navigate(['/auth']);
+      // }
+      this.router.navigate(['/']);
     })
   );
+
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(AuthActions.AUTO_LOGIN),
+    map((action: AuthActions.AutoLogin) => {
+      const userData: {
+        email: string,
+        id: string,
+        _token: string,
+        _tokenExpirationDate: string
+      } = JSON.parse(localStorage.getItem('userData'));
+
+      if (!userData) {
+        return { type: 'AUTO_LOGIN_FAIL' };
+      }
+
+      const loadedUser = new User(
+        userData.email,
+        userData.id,
+        userData._token,
+        new Date(userData._tokenExpirationDate)
+      );
+
+      if (loadedUser.token) {
+        const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+        this.authService.setLogoutTimer(expirationDuration);
+        return new AuthActions.AuthenticateSuccess({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          tokenExpirationDate: new Date(userData._tokenExpirationDate)
+        });
+      }
+
+      return { type: 'AUTO_LOGIN_FAIL' };
+    })
+  );
+
+  @Effect({ dispatch: false })
+  authLogout = this.actions$.pipe(
+    ofType(AuthActions.LOGOUT),
+    tap((action: AuthActions.Logout) => {
+      localStorage.removeItem('userData');
+      this.authService.clearLogoutTimer();
+      this.router.navigate(['/auth']);
+    })
+  );
+
+  private handleAuthentication(authRes: AuthResponseData) {
+    const tokenExpirationDate = new Date(new Date().getTime() + +authRes.expiresIn * 1000);
+    const user = new User(authRes.email, authRes.localId, authRes.idToken, tokenExpirationDate);
+    this.authService.setLogoutTimer(+authRes.expiresIn * 1000);
+    localStorage.setItem('userData', JSON.stringify(user));
+    return new AuthActions.AuthenticateSuccess({
+      email: authRes.email,
+      userId: authRes.localId,
+      token: authRes.idToken,
+      tokenExpirationDate: tokenExpirationDate
+    });
+  }
 
   private handleError(errorRes: HttpErrorResponse) {
     console.log(errorRes);
