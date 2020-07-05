@@ -88,13 +88,20 @@ export class AuthEffects {
   @Effect({ dispatch: false })
   authRedirect = this.actions$.pipe(
     ofType(AuthActions.AUTHENTICATE_SUCCESS/*, AuthActions.LOGOUT*/),
-    tap((action: AuthActions.AuthActions) => {
+    tap((action: AuthActions.AuthenticateSuccess) => {
       // if (action.type === AuthActions.AUTHENTICATE_SUCCESS) {
       //   this.router.navigate(['/']);
       // } else if (action.type === AuthActions.LOGOUT) {
       //   this.router.navigate(['/auth']);
       // }
-      this.router.navigate(['/']);
+      if (action.payload.redirect) {
+        // Only redirect if it is not auto login.
+        // This is to advoid redirecting when being at, say /recipes/1,
+        // and reloading the page will redirect to /recipes. To stop that,
+        // we add an additional parameter to the AuthActions.AuthenticateSuccess's
+        // constructor payload, and check it here to determine whether should redirect
+        this.router.navigate(['/']);
+      }
     })
   );
 
@@ -127,7 +134,8 @@ export class AuthEffects {
           email: loadedUser.email,
           userId: loadedUser.id,
           token: loadedUser.token,
-          tokenExpirationDate: new Date(userData._tokenExpirationDate)
+          tokenExpirationDate: new Date(userData._tokenExpirationDate),
+          redirect: false
         });
       }
 
@@ -154,7 +162,8 @@ export class AuthEffects {
       email: authRes.email,
       userId: authRes.localId,
       token: authRes.idToken,
-      tokenExpirationDate: tokenExpirationDate
+      tokenExpirationDate: tokenExpirationDate,
+      redirect: true
     });
   }
 

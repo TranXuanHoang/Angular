@@ -2,9 +2,9 @@ import { User } from '../user.model';
 import * as authActions from './auth.actions';
 
 export interface State {
-  user: User,
-  authError: string,
-  loading: boolean
+  user: User;
+  authError: string;
+  loading: boolean;
 }
 
 const initialState: State = {
